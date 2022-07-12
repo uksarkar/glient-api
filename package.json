@@ -23,7 +23,8 @@
     "@fastify/swagger": "^7.4.1",
     "fastify": "^4.0.0",
     "fastify-cli": "^4.3.0",
-    "fastify-plugin": "^3.0.0"
+    "fastify-plugin": "^3.0.0",
+    "prisma": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
