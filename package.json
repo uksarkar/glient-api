@@ -21,6 +21,7 @@
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^4.1.0",
     "@fastify/swagger": "^7.4.1",
+    "@prisma/client": "4.0.0",
     "fastify": "^4.0.0",
     "fastify-cli": "^4.3.0",
     "fastify-plugin": "^3.0.0",
