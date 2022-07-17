@@ -2378,6 +2378,11 @@ sprintf-js@~1.0.2:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==
 
+sql-string-escape@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/sql-string-escape/-/sql-string-escape-1.1.6.tgz#a4a5cca6b1c9f7335de111997aeadf40a0fac079"
+  integrity sha512-akLfyyrqKHSwoJ3i2mNEAM0Zq837jXumofnWB7822PIjzpy+2soXU8T/tzCy6clcvDoc/x0fA4y7VXdxKN4VTA==
+
 stack-utils@^2.0.2, stack-utils@^2.0.4:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-2.0.5.tgz#d25265fca995154659dbbfba3b49254778d2fdd5"
