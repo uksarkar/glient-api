@@ -9,3 +9,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  cashBalance  Float         @default(0)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id                Int        @id @default(autoincrement())
+  restaurnat        Restaurant @relation(fields: [restaurnatId], references: [id])
+  restaurnatId      Int
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            Int
+  transactionAmount Float
+  transactionDate   DateTime   @default(now())
+}
+
+model Restaurant {
+  id               Int               @id @default(autoincrement())
+  restaurantName   String
+  cashBalance      Float             @default(0)
+  transactions     Transaction[]
+  restaurantDishes RestaurantDish[]
+  RestaurantTimes  RestaurantTimes[]
+}
+
+model Dish {
+  id               Int              @id @default(autoincrement())
+  dishName         String
+  restaurantDishes RestaurantDish[]
+}
+
+model RestaurantDish {
+  id           Int        @id @default(autoincrement())
+  restaurantId Int        @unique
+  dishId       Int        @unique
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  dish         Dish       @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  price        Float
+}
+
+model RestaurantTimes {
+  id           Int        @id @default(autoincrement())
+  openAt       DateTime
+  closeAt      DateTime
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
