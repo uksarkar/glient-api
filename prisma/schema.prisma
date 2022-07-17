@@ -21,8 +21,8 @@ model User {
 
 model Transaction {
   id                Int        @id @default(autoincrement())
-  restaurnat        Restaurant @relation(fields: [restaurnatId], references: [id])
-  restaurnatId      Int
+  restaurnat        Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId      Int
   user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId            Int
   dish              Dish       @relation(fields: [dishId], references: [id], onDelete: Cascade)
@@ -55,8 +55,8 @@ model Dish {
 
 model RestaurantDish {
   id           Int        @id @default(autoincrement())
-  restaurantId Int        @unique
-  dishId       Int        @unique
+  restaurantId Int
+  dishId       Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   dish         Dish       @relation(fields: [dishId], references: [id], onDelete: Cascade)
   price        Float

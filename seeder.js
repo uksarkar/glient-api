@@ -34,8 +34,8 @@ async function generateSqlFromDemoData() {
     process.exit(1);
   }
 
-  let restaurants_sql = `INSERT INTO restaurants (id, restaurantName, cashBalance) VALUES `;
-  let restaurant_dishes_sql = `INSERT INTO restaurant_dishes (restaurantId, dishId, price) VALUES `;
+  let restaurants_sql = `INSERT INTO restaurants ("id", "restaurantName", "cashBalance") VALUES `;
+  let restaurant_dishes_sql = `INSERT INTO restaurant_dishes ("restaurantId", "dishId", "price") VALUES `;
   let dishes = [];
 
   const restaurants_name = data.map((r, i) => {
@@ -47,9 +47,9 @@ async function generateSqlFromDemoData() {
     )}, ${r.cashBalance})${r_ending}`;
 
     r.menu.map((d, m_ind) => {
-      let dishId = dishes.indexOf(d.dishName);
+      let dishId = dishes.indexOf(d.dishName) + 1;
       const d_ending = isLast && m_ind + 1 === r.menu.length ? ";" : ",";
-      if (dishId === -1) {
+      if (!dishId) {
         dishes.push(d.dishName);
         dishId = dishes.length;
       }
@@ -67,8 +67,8 @@ async function generateSqlFromDemoData() {
     process.exit(1);
   }
 
-  let user_sql = `INSERT INTO users (id, name, cashBalance) VALUES `;
-  let transaction_sql = `INSERT INTO transactions (userId, restaurantId, dishId, transactionAmount, transactionDate) VALUES `;
+  let user_sql = `INSERT INTO users ("id", "name", "cashBalance") VALUES `;
+  let transaction_sql = `INSERT INTO transactions ("userId", "restaurantId", "dishId", "transactionAmount", "transactionDate") VALUES `;
   users.map((u, i) => {
     const userId = i + 1;
     const isLast = users.length === userId;
@@ -91,12 +91,14 @@ async function generateSqlFromDemoData() {
         isLast && p_ind + 1 === u.purchaseHistory.length ? ";" : ",";
       transaction_sql += `\n(${userId}, ${restaurantId}, ${dishId}, ${
         h.transactionAmount
-      }, ${escapeString(h.transactionDate)})${p_ending}`;
+      }, '${new Date(
+        escapeString(h.transactionDate)
+      ).toISOString()}')${p_ending}`;
     });
   });
 
-  const dish_sql = `INSERT INTO dishes (id, dishName) VALUES\n${dishes
-    .map((d, d_ind) => `(${d_ind}, ${escapeString(d)})`)
+  const dish_sql = `INSERT INTO dishes ("id", "dishName") VALUES\n${dishes
+    .map((d, d_ind) => `(${d_ind + 1}, ${escapeString(d)})`)
     .join(",\n")}`;
 
   fs.writeFileSync(
