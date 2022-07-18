@@ -42,6 +42,7 @@ model Restaurant {
   RestaurantTimes  RestaurantTimes[]
 
   @@map("restaurants")
+  @@index([restaurantName])
 }
 
 model Dish {
@@ -51,6 +52,7 @@ model Dish {
   transactions     Transaction[]
 
   @@map("dishes")
+  @@index([dishName])
 }
 
 model RestaurantDish {
@@ -62,6 +64,7 @@ model RestaurantDish {
   price        Float
 
   @@map("restaurant_dishes")
+  @@index([price])
 }
 
 model RestaurantTimes {
@@ -72,4 +75,5 @@ model RestaurantTimes {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
   @@map("restaurant_times")
+  @@index([openAt, closeAt])
 }

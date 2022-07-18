@@ -56,6 +56,18 @@ CREATE TABLE "restaurant_times" (
     CONSTRAINT "restaurant_times_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE INDEX "restaurants_restaurantName_idx" ON "restaurants"("restaurantName");
+
+-- CreateIndex
+CREATE INDEX "dishes_dishName_idx" ON "dishes"("dishName");
+
+-- CreateIndex
+CREATE INDEX "restaurant_dishes_price_idx" ON "restaurant_dishes"("price");
+
+-- CreateIndex
+CREATE INDEX "restaurant_times_openAt_closeAt_idx" ON "restaurant_times"("openAt", "closeAt");
+
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
