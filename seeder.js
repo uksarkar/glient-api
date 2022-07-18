@@ -26,6 +26,60 @@ async function handlePromise(func, ...args) {
   }
 }
 
+function getRestaurantsTimes(times) {
+  try {
+    const results = [];
+
+    times.split(",").map(d => {
+      const dateArr = d.trim().split("/");
+      return dateArr.map(dt => {
+        const dateTimeArr = dt.trim().split(" ");
+        const days = ["", "Thurs", "Fri", "Sat", "Sun", "Mon", "Weds", "Tues"];
+
+        const openAt = formatProxyDateTime(
+          days.indexOf(dateTimeArr[0]),
+          formatTime(dateTimeArr[1], dateTimeArr[2])
+        );
+        const closeAt = formatProxyDateTime(
+          days.indexOf(dateTimeArr[0]),
+          formatTime(dateTimeArr[4], dateTimeArr[5])
+        );
+
+        results.push({
+          openAt,
+          closeAt
+        });
+      });
+    });
+
+    return results;
+  } catch (error) {
+    return null;
+  }
+}
+
+function formatTime(time, post) {
+  const timeArr = time?.split(":") || ["00", "00"],
+    hn = Number(timeArr[0]),
+    h =
+      post && post.toLowerCase() === "pm"
+        ? String(hn === 12 ? hn : hn + 12)
+        : hn === 12
+        ? "00"
+        : timeArr[0],
+    m = timeArr[1];
+  return `${h.length < 2 ? "0" : ""}${h}:${
+    m ? (m.length < 2 ? "0" + m : m) : "00"
+  }`;
+}
+
+function formatProxyDateTime(date, time) {
+  const d = new Date(
+    `1970-01-${String(date).length < 2 ? "0" + date : date}T${time}:00.000Z`
+  );
+  return d.toISOString();
+}
+
 async function generateSqlFromDemoData() {
   const [data, error] = await handlePromise(getJSON, restaurantJSON);
 
@@ -36,12 +90,23 @@ async function generateSqlFromDemoData() {
 
   let restaurants_sql = `INSERT INTO restaurants ("id", "restaurantName", "cashBalance") VALUES `;
   let restaurant_dishes_sql = `INSERT INTO restaurant_dishes ("restaurantId", "dishId", "price") VALUES `;
+  let restaurant_times_sql = `INSERT INTO restaurant_times ("restaurantId", "openAt", "closeAt") VALUES `;
   let dishes = [];
 
   const restaurants_name = data.map((r, i) => {
     const restaurantId = i + 1;
     const isLast = restaurantId === data.length;
     const r_ending = isLast ? ";" : ",";
+    const r_times = getRestaurantsTimes(r.openingHours);
+
+    if (!r_times) return;
+
+    r_times.map((t, t_ind) => {
+      restaurant_times_sql += `\n(${restaurantId}, '${t.openAt}', '${
+        t.closeAt
+      }')${isLast && t_ind + 1 === r_times.length ? ";" : ","}`;
+    });
+
     restaurants_sql += `\n(${restaurantId}, ${escapeString(
       r.restaurantName
     )}, ${r.cashBalance})${r_ending}`;
@@ -81,7 +146,7 @@ async function generateSqlFromDemoData() {
     u.purchaseHistory.map((h, p_ind) => {
       const restaurantId = restaurants_name.indexOf(h.restaurantName) + 1;
       const dishId = dishes.indexOf(h.dishName) + 1;
-      if (!restaurantId && !dishId) {
+      if (!restaurantId || !dishId) {
         console.error(
           `Restaurant or dish not found with the name of ${h.restaurantName} or ${h.dishName}`
         );
@@ -101,9 +166,22 @@ async function generateSqlFromDemoData() {
     .map((d, d_ind) => `(${d_ind + 1}, ${escapeString(d)})`)
     .join(",\n")}`;
 
+  restaurants_sql = restaurants_sql.endsWith(",")
+    ? restaurants_sql.substring(0, restaurants_sql.length - 1) + ";"
+    : restaurants_sql;
+  restaurant_dishes_sql = restaurant_dishes_sql.endsWith(",")
+    ? restaurant_dishes_sql.substring(0, restaurant_dishes_sql.length - 1) + ";"
+    : restaurant_dishes_sql;
+  restaurant_times_sql = restaurant_times_sql.endsWith(",")
+    ? restaurant_times_sql.substring(0, restaurant_times_sql.length - 1) + ";"
+    : restaurant_times_sql;
+  transaction_sql = transaction_sql.endsWith(",")
+    ? transaction_sql.substring(0, transaction_sql.length - 1) + ";"
+    : transaction_sql;
+
   fs.writeFileSync(
     "prisma/seed.sql",
-    `/**\nRestaurants data\n*/\n\n${restaurants_sql}\n\n/**\nDish data\n*/\n\n${dish_sql};\n\n/**\nRestaurant Dishes\n*/\n\n${restaurant_dishes_sql}\n/**\nUsers data\n*/\n${user_sql}\n\n/**\ntransactions\n*/\n${transaction_sql}`,
+    `/**\nRestaurants data\n*/\n\n${restaurants_sql}\n\n/**\nDish data\n*/\n\n${dish_sql};\n\n/**\nRestaurant Dishes\n*/\n\n${restaurant_dishes_sql}\n/**\nUsers data\n*/\n${user_sql}\n\n/**\ntransactions\n*/\n${transaction_sql}\n\n/**\nRestaurants time data\n*/\n${restaurant_times_sql}\n`,
     function (err) {
       if (err) return console.log(err);
     }
