@@ -39,7 +39,7 @@ model Restaurant {
   cashBalance      Float             @default(0)
   transactions     Transaction[]
   restaurantDishes RestaurantDish[]
-  RestaurantTimes  RestaurantTimes[]
+  restaurantTimes  RestaurantTimes[]
 
   @@map("restaurants")
   @@index([restaurantName])
