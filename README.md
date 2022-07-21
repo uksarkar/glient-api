@@ -1,5 +1,27 @@
-# Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
-This project was bootstrapped with Fastify-CLI.
+# Glient test project
+
+**_APi Documentations `/docs`_**
+
+```sh
+# setup .env file from .env.example
+# and run this command
+npx prisma migrate dev
+
+# seed your database from `prisma/seed.sql` e.g.
+psql -h localhost -U postgres -d glientdb -f ./prisma/seed.sql
+
+# build and run the project
+npm run dev
+
+```
+
+## Tools
+
+- `Node.js@18.6.0`
+- `Fastify`
+- `Prisma`
+- `PostgreSQL`
+- `TypeScript`
 
 ## Available Scripts
 
@@ -13,11 +35,3 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 ### `npm start`
 
 For production mode
-
-### `npm run test`
-
-Run the test cases.
-
-## Learn More
-
-To learn Fastify, check out the [Fastify documentation](https://www.fastify.io/docs/latest/).
