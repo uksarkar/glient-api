@@ -1,0 +1,44 @@
+version: "3"
+services:
+  glient_api:
+    container_name: glient_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      WAIT_HOSTS: postgres:5432
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+  postgres:
+    container_name: postgres
+    image: postgres:14.4
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresdata:/var/lib/postgresql/data
+      - ./prisma/migrations/20220718033359_initial_migrations/migration.sql
+      - ./prisma/seed.sql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: glientdb
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@glient.com
+      - PGADMIN_DEFAULT_PASSWORD=secret
+      - PGADMIN_LISTEN_PORT=80
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+volumes:
+  pgadmin-data:
+  db-data:
